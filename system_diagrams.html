@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Swarm - System Architecture Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e1e1e1;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #bb86fc, #03dac6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            color: #999;
+        }
+        
+        .diagram-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 10px;
+        }
+        
+        .nav-button {
+            padding: 12px 24px;
+            background: #2e2e2e;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #e1e1e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .nav-button:hover {
+            background: #3e3e3e;
+            border-color: #bb86fc;
+            transform: translateY(-2px);
+        }
+        
+        .nav-button.active {
+            background: #bb86fc;
+            color: #000;
+            border-color: #bb86fc;
+        }
+        
+        .diagram-container {
+            background: #1e1e1e;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+        }
+        
+        .diagram-header {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .diagram-header h2 {
+            color: #03dac6;
+            margin-bottom: 10px;
+        }
+        
+        .diagram-header p {
+            color: #999;
+        }
+        
+        .mermaid-wrapper {
+            background: #0a0a0a;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .mermaid {
+            text-align: center;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-button {
+            padding: 10px 20px;
+            background: #bb86fc;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .control-button:hover {
+            background: #9965d6;
+            transform: translateY(-2px);
+        }
+        
+        .info-box {
+            background: #2e2e2e;
+            border-left: 4px solid #03dac6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .info-box h3 {
+            color: #03dac6;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-box li {
+            padding: 5px 0;
+            color: #ccc;
+        }
+        
+        .info-box li:before {
+            content: "→ ";
+            color: #bb86fc;
+            font-weight: bold;
+        }
+        
+        /* Mermaid theme overrides */
+        .mermaid .node rect,
+        .mermaid .node circle,
+        .mermaid .node ellipse,
+        .mermaid .node polygon,
+        .mermaid .node path {
+            fill: #2e2e2e !important;
+            stroke: #bb86fc !important;
+            stroke-width: 2px !important;
+        }
+        
+        .mermaid .node .label {
+            color: #e1e1e1 !important;
+        }
+        
+        .mermaid .edgePath .path {
+            stroke: #bb86fc !important;
+            stroke-width: 2px !important;
+        }
+        
+        .mermaid .edgeLabel {
+            background-color: #0a0a0a !important;
+            color: #e1e1e1 !important;
+        }
+        
+        .mermaid .cluster rect {
+            fill: #1e1e1e !important;
+            stroke: #03dac6 !important;
+        }
+        
+        .mermaid .cluster text {
+            fill: #03dac6 !important;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .controls,
+            .diagram-nav {
+                display: none;
+            }
+            
+            .diagram-container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Marketing Swarm System Architecture</h1>
+            <p>Interactive diagrams showing the dynamic agent collaboration system</p>
+        </div>
+        
+        <div class="diagram-nav">
+            <button class="nav-button active" onclick="showDiagram('architecture')">System Architecture</button>
+            <button class="nav-button" onclick="showDiagram('personality')">Agent Personalities</button>
+            <button class="nav-button" onclick="showDiagram('conversation')">Conversation Flow</button>
+            <button class="nav-button" onclick="showDiagram('selection')">Agent Selection</button>
+            <button class="nav-button" onclick="showDiagram('relationships')">Relationship Tracking</button>
+            <button class="nav-button" onclick="showDiagram('output')">Output Generation</button>
+            <button class="nav-button" onclick="showDiagram('communication')">Real-Time Communication</button>
+        </div>
+        
+        <!-- System Architecture -->
+        <div id="architecture" class="diagram-container">
+            <div class="diagram-header">
+                <h2>System Architecture</h2>
+                <p>Shows how Frontend, Backend, and Agent System components interact via WebSocket connections.</p>
+            </div>
+            <div class="mermaid-wrapper">
+                <div class="mermaid">
+graph TB
+    subgraph "Frontend Layer"
+        UI[React UI<br/>Port 3001]
+        WS[WebSocket Client]
+        CI[Conversation Interface]
+        BD[Briefing Document View]
+    end
+
+    subgraph "Backend Layer"
+        API[FastAPI Server<br/>Port 8001]
+        SIO[Socket.IO Server]
+        AM[Agent Manager]
+        SF[Safety Filters]
+    end
+
+    subgraph "Agent System"
+        A1[Sarah<br/>Brand Strategy Lead<br/>👔]
+        A2[Marcus<br/>Digital Campaign Manager<br/>📱]
+        A3[Elena<br/>Content Marketing<br/>✍️]
+        A4[David<br/>Customer Experience<br/>🎨]
+        A5[Priya<br/>Marketing Analytics<br/>📊]
+        A6[Alex<br/>Growth Marketing<br/>🚀]
+    end
+
+    UI --> WS
+    WS <--> SIO
+    SIO <--> AM
+    AM --> SF
+    AM <--> A1
+    AM <--> A2
+    AM <--> A3
+    AM <--> A4
+    AM <--> A5
+    AM <--> A6
+                </div>
+            </div>
+            <div class="info-box">
+                <h3>Key Components</h3>
+                <ul>
+                    <li>Frontend uses React with real-time WebSocket updates</li>
+                    <li>Backend runs FastAPI on port 8001 with Socket.IO</li>
+                    <li>Agent Manager orchestrates all 6 marketing specialists</li>
+                    <li>Safety filters ensure appropriate responses</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Agent Personality System -->
+        <div id="personality" class="diagram-container" style="display: none;">
+            <div class="diagram-header">
+                <h2>Agent Personality System</h2>
+                <p>Illustrates how agent personality traits influence their behavior and interactions.</p>
+            </div>
+            <div class="mermaid-wrapper">
+                <div class="mermaid">
+graph LR
+    subgraph "Agent Traits"
+        AS[Assertiveness<br/>0.0-1.0]
+        CO[Contrarianism<br/>0.0-1.0]
+        CR[Creativity<br/>0.0-1.0]
+        PA[Patience<br/>0.0-1.0]
+    end
+
+    subgraph "Behavioral Outcomes"
+        IN[Interruption<br/>Likelihood]
+        RT[Response<br/>Time]
+        CT[Conflict<br/>Tendency]
+        AL[Alliance<br/>Formation]
+    end
+
+    AS --> IN
+    CO --> CT
+    CR --> RT
+    PA --> RT
+    AS --> AL
+    CO --> AL
+                </div>
+            </div>
+            <div class="info-box">
+                <h3>Personality Traits</h3>
+                <ul>
+                    <li>Sarah: Visionary idealist (assertiveness: 0.8, contrarianism: 0.4)</li>
+                    <li>Marcus: Data evangelist (assertiveness: 0.9, contrarianism: 0.8)</li>
+                    <li>Elena: Creative rebel (assertiveness: 0.7, contrarianism: 0.7)</li>
+                    <li>David: User zealot (assertiveness: 0.6, contrarianism: 0.6)</li>
+                    <li>Priya: Skeptical scientist (assertiveness: 0.7, contrarianism: 0.9)</li>
+                    <li>Alex: Risk-taker (assertiveness: 0.8, contrarianism: 0.5)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Dynamic Conversation Flow -->
+        <div id="conversation" class="diagram-container" style="display: none;">
+            <div class="diagram-header">
+                <h2>Dynamic Conversation Flow</h2>
+                <p>Details the conversation flow with interruptions, reactions, and phase transitions.</p>
+            </div>
+            <div class="mermaid-wrapper">
+                <div class="mermaid">
+flowchart TD
+    Start([User Query]) --> Init[Initialize Conversation]
+    Init --> CM[Create Conversation Memory]
+    
+    CM --> P1{Phase: Discovery}
+    P1 --> SA[Sarah Starts<br/>Strategic Framing]
+    
+    SA --> DL[Dynamic Loop]
+    
+    subgraph "Dynamic Response Loop"
+        DL --> TT[Calculate Thinking Time<br/>patience × 3 + random]
+        TT --> GR[Generate Response<br/>Based on Context]
+        GR --> CR{Check for<br/>Reactions?}
+        CR -->|Yes| RR[Generate Reactive<br/>Response]
+        CR -->|No| PR[Generate Primary<br/>Response]
+        RR --> EM[Emit Response]
+        PR --> EM
+        EM --> UR[Update Relationships]
+        UR --> NA[Select Next Agent]
+        NA --> CI{Check<br/>Interruption?}
+        CI -->|Yes| INT[Interrupt Current<br/>Speaker]
+        CI -->|No| CONT[Continue Normal<br/>Flow]
+        INT --> DL
+        CONT --> DL
+    end
+    
+    DL --> PC{Phase<br/>Complete?}
+    PC -->|No| DL
+    PC -->|Yes| NP{Next Phase?}
+    
+    NP -->|Analysis| P2[Phase: Analysis]
+    NP -->|Recommendation| P3[Phase: Recommendation]
+    NP -->|Synthesis| P4[Phase: Synthesis]
+    NP -->|Complete| END
+    
+    P2 --> DL
+    P3 --> DL
+    P4 --> DL
+    
+    END[Generate Briefing<br/>Document]
+                </div>
+            </div>
+        </div>
+        
+        <!-- Agent Selection Algorithm -->
+        <div id="selection" class="diagram-container" style="display: none;">
+            <div class="diagram-header">
+                <h2>Agent Selection Algorithm</h2>
+                <p>Explains how the system selects the next agent based on context, personality, and history.</p>
+            </div>
+            <div class="mermaid-wrapper">
+                <div class="mermaid">
+flowchart LR
+    subgraph "Selection Factors"
+        CF[Current Agent<br/>Personality]
+        LM[Last Message<br/>Content]
+        AS[Agents Who<br/>Haven't Spoken]
+        RH[Relationship<br/>History]
+    end
+    
+    subgraph "Selection Rules"
+        R1[High Assertiveness<br/>→ Triggers Contrarians]
+        R2[Domain Keywords<br/>→ Domain Experts]
+        R3[Unspoken Agents<br/>→ Higher Priority]
+        R4[Conflict History<br/>→ More Likely to Respond]
+    end
+    
+    CF --> R1
+    LM --> R2
+    AS --> R3
+    RH --> R4
+    
+    R1 --> NA[Next Agent]
+    R2 --> NA
+    R3 --> NA
+    R4 --> NA
+                </div>
+            </div>
+        </div>
+        
+        <!-- Relationship Tracking -->
+        <div id="relationships" class="diagram-container" style="display: none;">
+            <div class="diagram-header">
+                <h2>Relationship Tracking System</h2>
+                <p>Shows how agent relationships (alliances, conflicts, respect) are tracked and evolve.</p>
+            </div>
+            <div class="mermaid-wrapper">
+                <div class="mermaid">
+graph TD
+    subgraph "Relationship Types"
+        AL[Alliances<br/>Agreement Counter]
+        CF[Conflicts<br/>Disagreement Counter]
+        RL[Respect Levels<br/>-10 to +10]
+    end
+    
+    subgraph "Triggers"
+        AG[Agreement Phrases<br/>"building on"<br/>"exactly"<br/>"brilliant"]
+        DG[Disagreement Phrases<br/>"disagree"<br/>"wrong"<br/>"stop"]
+        RF[Reference Phrases<br/>Mentioning other<br/>agents by name]
+    end
+    
+    AG --> AL
+    DG --> CF
+    RF --> RL
+    
+    AL --> RS[Relationship<br/>Summary]
+    CF --> RS
+    RL --> RS
+                </div>
+            </div>
+        </div>
+        
+        <!-- Professional Output Generation -->
+        <div id="output" class="diagram-container" style="display: none;">
+            <div class="diagram-header">
+                <h2>Professional Output Generation</h2>
+                <p>Demonstrates how conversations are synthesized into professional briefing documents.</p>
+            </div>
+            <div class="mermaid-wrapper">
+                <div class="mermaid">
+flowchart TD
+    CH[Conversation History] --> AN[Analyze Contributions]
+    
+    AN --> KP[Extract Key Points]
+    AN --> AR[Identify Agreements]
+    AN --> DB[Note Debates]
+    AN --> DP[Collect Data Points]
+    AN --> RC[Compile Recommendations]
+    
+    subgraph "Briefing Document Sections"
+        ES[Executive Summary]
+        SA[Situation Analysis]
+        SR[Strategic Recommendations]
+        IT[Implementation Timeline]
+        SM[Success Metrics]
+        RA[Risk Assessment]
+        NS[Next Steps]
+    end
+    
+    KP --> ES
+    AR --> ES
+    DB --> SA
+    DP --> SA
+    RC --> SR
+    SR --> IT
+    SR --> SM
+    DB --> RA
+    IT --> NS
+    
+    ES --> BD[Final Briefing<br/>Document]
+    SA --> BD
+    SR --> BD
+    IT --> BD
+    SM --> BD
+    RA --> BD
+    NS --> BD
+                </div>
+            </div>
+        </div>
+        
+        <!-- Real-Time Communication -->
+        <div id="communication" class="diagram-container" style="display: none;">
+            <div class="diagram-header">
+                <h2>Real-Time Communication Flow</h2>
+                <p>Sequence diagram showing real-time message flow between system components.</p>
+            </div>
+            <div class="mermaid-wrapper">
+                <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant WebSocket
+    participant Backend
+    participant AgentManager
+    participant Agents
+    
+    User->>Frontend: Enter query
+    Frontend->>WebSocket: start_conversation
+    WebSocket->>Backend: Process request
+    Backend->>AgentManager: Initialize conversation
+    
+    loop Dynamic Conversation
+        AgentManager->>Agents: Select agent based on context
+        Agents->>Agents: Calculate thinking time
+        Agents->>AgentManager: Generate response
+        AgentManager->>Backend: Update relationships
+        Backend->>WebSocket: Emit agent_response
+        WebSocket->>Frontend: Display response
+        Frontend->>User: Show agent message
+    end
+    
+    AgentManager->>Backend: Generate briefing
+    Backend->>WebSocket: conversation_complete
+    WebSocket->>Frontend: Display briefing
+    Frontend->>User: Show final document
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="control-button" onclick="window.print()">Export as PDF</button>
+        <button class="control-button" onclick="location.reload()">Refresh Diagrams</button>
+    </div>
+    
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#bb86fc',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#7700ff',
+                lineColor: '#f4f4f4',
+                secondaryColor: '#03dac6',
+                tertiaryColor: '#121212',
+                background: '#121212',
+                mainBkg: '#1e1e1e',
+                secondBkg: '#2e2e2e',
+                tertiaryBkg: '#121212',
+                textColor: '#e1e1e1',
+                borderColor: '#333',
+                fontSize: '16px'
+            },
+            flowchart: {
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+        
+        // Show/hide diagrams
+        function showDiagram(diagramId) {
+            // Hide all diagrams
+            const diagrams = document.querySelectorAll('.diagram-container');
+            diagrams.forEach(d => d.style.display = 'none');
+            
+            // Show selected diagram
+            document.getElementById(diagramId).style.display = 'block';
+            
+            // Update active button
+            const buttons = document.querySelectorAll('.nav-button');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Re-render mermaid for the shown diagram
+            mermaid.init();
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const buttons = Array.from(document.querySelectorAll('.nav-button'));
+            const activeIndex = buttons.findIndex(b => b.classList.contains('active'));
+            
+            if (e.key === 'ArrowRight' && activeIndex < buttons.length - 1) {
+                buttons[activeIndex + 1].click();
+            } else if (e.key === 'ArrowLeft' && activeIndex > 0) {
+                buttons[activeIndex - 1].click();
+            }
+        });
+    </script>
+</body>
+</html>
